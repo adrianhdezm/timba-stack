@@ -1,7 +1,7 @@
 import { vitePlugin as remix } from '@remix-run/dev';
-import { defineConfig, type UserConfig } from 'vite';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import esbuild from 'esbuild';
+import { type UserConfig, defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [

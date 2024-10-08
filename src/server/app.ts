@@ -1,13 +1,14 @@
 import { createRequestHandler } from '@remix-run/express';
-import express, { type Application, type Request, type Response } from 'express';
 import type { ServerBuild } from '@remix-run/node';
 import compression from 'compression';
 import cors from 'cors';
+import express, { type Application, type Request, type Response } from 'express';
 import helmet from 'helmet';
-import pinoHttp from 'pino-http';
-import { logger } from './logger.js';
 import type { LevelWithSilent } from 'pino';
+import pinoHttp from 'pino-http';
 import type { ViteDevServer } from 'vite';
+
+import { logger } from './logger.js';
 
 export const createApp = async ({ viteDevServer }: { viteDevServer: ViteDevServer | null }): Promise<Application> => {
   const app: Application = express();

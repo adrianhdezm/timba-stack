@@ -1,11 +1,11 @@
+import jsPlugin from '@eslint/js';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
+import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
-import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-import jsPlugin from '@eslint/js';
 import globals from 'globals';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
