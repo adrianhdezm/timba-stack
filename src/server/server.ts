@@ -1,52 +1,50 @@
-import { createRequestHandler } from '@remix-run/express';
-import type { ServerBuild } from '@remix-run/node';
-import compression from 'compression';
-import express from 'express';
-import morgan from 'morgan';
+import dotenv from 'dotenv';
+import http from 'node:http';
+
+import { createApp } from './app';
+import { logger } from './logger';
+
+// Load environment variables from .env file
+dotenv.config();
 
 const viteDevServer =
   process.env.NODE_ENV === 'production'
-    ? undefined
+    ? null
     : await import('vite').then((vite) =>
         vite.createServer({
           server: { middlewareMode: true }
         })
       );
 
-const remixApp = (
-  viteDevServer
-    ? () => viteDevServer.ssrLoadModule('virtual:remix/server-build')
-    : // @ts-expect-error - the file might not exist yet but it will
-      await import('./remix-app.js').catch(() => ({}))
-) as ServerBuild | (() => Promise<ServerBuild>);
+// Create the HTTP server using the Express app
+const app = await createApp({ viteDevServer });
+const server = http.createServer(app);
 
-const remixHandler = createRequestHandler({
-  build: remixApp
+// Start the server
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+  logger.info(`Server is running!${viteDevServer ? ` http://localhost:${port}` : ''}`);
 });
 
-const app = express();
+const onCloseSignal = () => {
+  logger.info('SIGINT received, shutting down');
+  server.close(async () => {
+    logger.info('Server closed, exiting process');
+    process.exit();
+  });
 
-app.use(compression());
+  setTimeout(() => process.exit(1), 2000).unref(); // Force shutdown after 2s
+};
 
-// http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
-app.disable('x-powered-by');
+process.on('SIGINT', onCloseSignal);
+process.on('SIGTERM', onCloseSignal);
 
-// handle asset requests
-if (viteDevServer) {
-  app.use(viteDevServer.middlewares);
-} else {
-  // Vite fingerprints its assets so we can cache forever.
-  app.use('/assets', express.static('build/client/assets', { immutable: true, maxAge: '1y' }));
-
-  // Everything else (like favicon.ico) is cached for an hour. You may want to be
-  // more aggressive with this caching.
-  app.use(express.static('build/client', { maxAge: '1h' }));
-}
-
-app.use(morgan('tiny'));
-
-// handle SSR requests
-app.all('*', remixHandler);
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Express server listening at http://localhost:${port}`));
+process.on('unhandledRejection', (reason) => {
+  if (reason) {
+    logger.error(reason, 'Unhandled Rejection');
+  }
+});
+process.on('uncaughtException', (err) => {
+  logger.error(err, 'Uncaught Exception');
+  process.exit(1);
+});
