@@ -8,7 +8,7 @@ import type { LevelWithSilent } from 'pino';
 import pinoHttp from 'pino-http';
 import type { ViteDevServer } from 'vite';
 
-import { logger } from './logger.js';
+import { logger } from './logger';
 
 export const createApp = async ({ viteDevServer }: { viteDevServer: ViteDevServer | null }): Promise<Application> => {
   const app: Application = express();
@@ -72,7 +72,10 @@ export const createApp = async ({ viteDevServer }: { viteDevServer: ViteDevServe
   ) as ServerBuild | (() => Promise<ServerBuild>);
 
   const remixHandler = createRequestHandler({
-    build: remixApp
+    build: remixApp,
+    getLoadContext: () => {
+      return { logger };
+    }
   });
   app.all('*', remixHandler);
 
