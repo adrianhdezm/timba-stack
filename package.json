@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "remix vite:build",
-    "dev": "tsx ./src/server/server.js",
+    "dev": "tsx ./src/server/server.ts",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "cross-env NODE_ENV=production node ./build/server/server.js",
     "typecheck": "tsc",
