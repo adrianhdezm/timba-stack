@@ -12,10 +12,21 @@ export default [
   {
     ignores: ['!**/.server', '!**/.client', '**/.cache/**', '**/node_modules/**', '**/build/**']
   },
+  // Base config
   {
     languageOptions: {
       ecmaVersion: 'latest',
-      sourceType: 'module',
+      sourceType: 'module'
+    },
+    rules: {
+      ...jsPlugin.configs.recommended.rules
+    }
+  },
+
+  // React
+  {
+    files: ['src/app/**/*.{js,mjs,cjs,ts,jsx,tsx}'],
+    languageOptions: {
       parserOptions: {
         ecmaFeatures: {
           jsx: true
@@ -25,14 +36,7 @@ export default [
         ...globals.browser,
         React: true
       }
-    }
-  },
-  // Base config
-  jsPlugin.configs.recommended,
-
-  // React
-  {
-    files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
+    },
     plugins: {
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,
