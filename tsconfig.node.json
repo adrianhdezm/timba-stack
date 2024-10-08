@@ -1,0 +1,7 @@
+{
+  "extends": "@total-typescript/tsconfig/bundler/no-dom",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["vite.config.ts", "tailwind.config.ts", "src/server/**/*.ts", "src/server/*.d.ts"]
+}

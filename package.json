@@ -6,12 +6,12 @@
   "type": "module",
   "scripts": {
     "build": "remix vite:build",
-    "dev": "node ./server.js",
+    "dev": "tsx ./src/server/server.js",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
-    "start": "cross-env NODE_ENV=production node ./server.js",
+    "start": "cross-env NODE_ENV=production node ./build/server/server.js",
     "typecheck": "tsc",
-    "format": "prettier --write . \"app/**/*.{ts,tsx,json,mjs,yml}\" --cache",
-    "format:check": "prettier --check . \"app/**/*.{ts,tsx,json,mjs,yml}\" --cache"
+    "format": "prettier --write . \"src/**/*.{ts,tsx,json,mjs,yml}\" --cache",
+    "format:check": "prettier --check . \"src/**/*.{ts,tsx,json,mjs,yml}\" --cache"
   },
   "dependencies": {
     "@remix-run/express": "^2.12.1",
@@ -36,6 +36,7 @@
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "autoprefixer": "^10.4.20",
+    "esbuild": "^0.24.0",
     "eslint": "^9.12.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jsx-a11y": "^6.10.0",
@@ -47,6 +48,7 @@
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.13",
+    "tsx": "^4.19.1",
     "typescript": "^5.6.2",
     "typescript-eslint": "^8.8.1",
     "vite": "^5.4.8",

@@ -1,14 +1,18 @@
 {
-  "extends": "@total-typescript/tsconfig/bundler/dom",
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ],
   "compilerOptions": {
-    "types": ["@remix-run/node", "vite/client"],
-    "jsx": "react-jsx",
-    "moduleResolution": "bundler",
-    "forceConsistentCasingInFileNames": true,
+    "module": "NodeNext",
     "baseUrl": ".",
     "paths": {
       "~/*": ["src/app/*"]
     }
-  },
-  "include": ["**/*.ts", "**/*.tsx", "src/app/*.d.ts"]
+  }
 }

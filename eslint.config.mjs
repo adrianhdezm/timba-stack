@@ -79,7 +79,7 @@ export default [
 
   // Node
   {
-    files: ['server.js', 'eslint.config.mjs', 'postcss.config.js'],
+    files: ['src/server/**/*.ts', 'vite.config.ts', 'eslint.config.mjs', 'postcss.config.js'],
     languageOptions: {
       globals: {
         ...globals.node

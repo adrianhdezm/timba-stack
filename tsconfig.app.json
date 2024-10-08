@@ -1,0 +1,14 @@
+{
+  "extends": "@total-typescript/tsconfig/bundler/dom",
+  "compilerOptions": {
+    "types": ["@remix-run/node", "vite/client"],
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["src/app/*"]
+    }
+  },
+  "include": ["src/app/**/*.ts", "src/app/**/*.tsx", "src/app/*.d.ts"]
+}

@@ -1,4 +1,5 @@
 import { createRequestHandler } from '@remix-run/express';
+import type { ServerBuild } from '@remix-run/node';
 import compression from 'compression';
 import express from 'express';
 import morgan from 'morgan';
@@ -12,9 +13,12 @@ const viteDevServer =
         })
       );
 
-const remixApp = viteDevServer
-  ? () => viteDevServer.ssrLoadModule('virtual:remix/server-build')
-  : await import('./build/server/remix-app.js');
+const remixApp = (
+  viteDevServer
+    ? () => viteDevServer.ssrLoadModule('virtual:remix/server-build')
+    : // @ts-expect-error - the file might not exist yet but it will
+      await import('./remix-app.js').catch(() => ({}))
+) as ServerBuild | (() => Promise<ServerBuild>);
 
 const remixHandler = createRequestHandler({
   build: remixApp
