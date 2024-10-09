@@ -10,7 +10,12 @@ import type { ViteDevServer } from 'vite';
 
 import { logger } from './logger';
 
-export const createApp = async ({ viteDevServer }: { viteDevServer: ViteDevServer | null }): Promise<Application> => {
+interface AppParams {
+  viteDevServer: ViteDevServer | null;
+  remixApp: ServerBuild;
+}
+
+export const createApp = async ({ viteDevServer, remixApp }: AppParams): Promise<Application> => {
   const app: Application = express();
 
   // Disable the X-Powered-By header
@@ -64,20 +69,15 @@ export const createApp = async ({ viteDevServer }: { viteDevServer: ViteDevServe
   }
 
   // handle SSR requests
-  const remixApp = (
-    viteDevServer
-      ? () => viteDevServer.ssrLoadModule('virtual:remix/server-build')
-      : // @ts-expect-error - the file might not exist yet but it will
-        await import('./remix-app.js').catch(() => ({}))
-  ) as ServerBuild | (() => Promise<ServerBuild>);
-
-  const remixHandler = createRequestHandler({
-    build: remixApp,
-    getLoadContext: () => {
-      return { logger };
-    }
-  });
-  app.all('*', remixHandler);
+  app.all(
+    '*',
+    createRequestHandler({
+      build: remixApp,
+      getLoadContext: () => {
+        return { logger };
+      }
+    })
+  );
 
   return app;
 };

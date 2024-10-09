@@ -1,50 +1,55 @@
+import type { ServerBuild } from '@remix-run/node';
 import dotenv from 'dotenv';
 import http from 'node:http';
+import type { ViteDevServer } from 'vite';
 
 import { createApp } from './app';
+import { setupShutdownHandlers } from './helpers/lifecycle.helpers';
 import { logger } from './logger';
 
 // Load environment variables from .env file
 dotenv.config();
 
-const viteDevServer =
-  process.env.NODE_ENV === 'production'
-    ? null
-    : await import('vite').then((vite) =>
-        vite.createServer({
-          server: { middlewareMode: true }
-        })
-      );
+let remixApp: ServerBuild | (() => Promise<ServerBuild>) | null = null;
+let viteDevServer: ViteDevServer | null = null;
 
-// Create the HTTP server using the Express app
-const app = await createApp({ viteDevServer });
-const server = http.createServer(app);
+try {
+  // Conditionally load Vite dev server if not in production
+  if (process.env.NODE_ENV !== 'production') {
+    const vite = await import('vite');
+    viteDevServer = await vite.createServer({ server: { middlewareMode: true } });
+  }
 
-// Start the server
-const port = process.env.PORT || 3000;
-server.listen(port, () => {
-  logger.info(`Server is running!${viteDevServer ? ` http://localhost:${port}` : ''}`);
-});
+  // Load the Remix app for SSR
+  if (viteDevServer) {
+    remixApp = (await viteDevServer.ssrLoadModule('virtual:remix/server-build')) as ServerBuild;
+    logger.info('Remix dev build loaded');
+  } else {
+    // @ts-expect-error - the file might not exist yet but it will
+    remixApp = (await import('./remix-app.js')) as ServerBuild;
+    logger.info('Remix production build loaded');
+  }
 
-const onCloseSignal = () => {
-  logger.info('SIGINT received, shutting down');
-  server.close(async () => {
-    logger.info('Server closed, exiting process');
-    process.exit();
+  if (!remixApp) {
+    throw new Error('Remix app not found');
+  }
+
+  // Create Express app with Remix and Vite (if available)
+  const app = await createApp({ viteDevServer, remixApp });
+  const server = http.createServer(app);
+
+  // Start the HTTP server
+  const port = process.env.PORT || 3000;
+  server.listen(port, () => {
+    logger.info('Server is up and running!');
+    if (viteDevServer) {
+      logger.info(`URL: http://localhost:${port}`);
+    }
   });
 
-  setTimeout(() => process.exit(1), 2000).unref(); // Force shutdown after 2s
-};
-
-process.on('SIGINT', onCloseSignal);
-process.on('SIGTERM', onCloseSignal);
-
-process.on('unhandledRejection', (reason) => {
-  if (reason) {
-    logger.error(reason, 'Unhandled Rejection');
-  }
-});
-process.on('uncaughtException', (err) => {
-  logger.error(err, 'Uncaught Exception');
+  // Graceful shutdown
+  setupShutdownHandlers(server);
+} catch (error) {
+  logger.error('Failed to start the server:', error);
   process.exit(1);
-});
+}
