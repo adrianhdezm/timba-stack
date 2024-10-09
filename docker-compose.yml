@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres:15
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-s3cr3t}
+    volumes:
+      - ./db/data:/var/lib/postgresql/data # Persist data
+      - ./db/scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql # Run init script

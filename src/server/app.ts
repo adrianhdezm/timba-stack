@@ -2,8 +2,10 @@ import { createRequestHandler } from '@remix-run/express';
 import type { ServerBuild } from '@remix-run/node';
 import compression from 'compression';
 import cors from 'cors';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import express, { type Application, type Request, type Response } from 'express';
 import helmet from 'helmet';
+import type { Pool } from 'pg';
 import type { LevelWithSilent } from 'pino';
 import pinoHttp from 'pino-http';
 import type { ViteDevServer } from 'vite';
@@ -13,9 +15,10 @@ import { logger } from './logger';
 interface AppParams {
   viteDevServer: ViteDevServer | null;
   remixApp: ServerBuild;
+  db: NodePgDatabase<Record<string, never>> & { $client: Pool };
 }
 
-export const createApp = async ({ viteDevServer, remixApp }: AppParams): Promise<Application> => {
+export const createApp = async ({ viteDevServer, remixApp, db }: AppParams): Promise<Application> => {
   const app: Application = express();
 
   // Disable the X-Powered-By header
@@ -74,7 +77,7 @@ export const createApp = async ({ viteDevServer, remixApp }: AppParams): Promise
     createRequestHandler({
       build: remixApp,
       getLoadContext: () => {
-        return { logger };
+        return { logger, db };
       }
     })
   );

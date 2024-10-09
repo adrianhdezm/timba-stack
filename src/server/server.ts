@@ -1,6 +1,8 @@
 import type { ServerBuild } from '@remix-run/node';
 import dotenv from 'dotenv';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import http from 'node:http';
+import pg from 'pg';
 import type { ViteDevServer } from 'vite';
 
 import { createApp } from './app';
@@ -34,8 +36,14 @@ try {
     throw new Error('Remix App Not Found');
   }
 
+  // Database connection
+  const pool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL
+  });
+  const db = drizzle(pool);
+
   // Create Express app with Remix and Vite (if available)
-  const app = await createApp({ viteDevServer, remixApp });
+  const app = await createApp({ viteDevServer, remixApp, db });
   const server = http.createServer(app);
 
   // Start the HTTP server
