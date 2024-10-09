@@ -23,15 +23,15 @@ try {
   // Load the Remix app for SSR
   if (viteDevServer) {
     remixApp = (await viteDevServer.ssrLoadModule('virtual:remix/server-build')) as ServerBuild;
-    logger.info('Remix dev build loaded');
+    logger.info('Remix App loaded in dev mode');
   } else {
     // @ts-expect-error - the file might not exist yet but it will
     remixApp = (await import('./remix-app.js')) as ServerBuild;
-    logger.info('Remix production build loaded');
+    logger.info('Remix App loaded in production mode');
   }
 
   if (!remixApp) {
-    throw new Error('Remix app not found');
+    throw new Error('Remix App Not Found');
   }
 
   // Create Express app with Remix and Vite (if available)
