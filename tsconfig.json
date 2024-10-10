@@ -12,7 +12,7 @@
     "module": "NodeNext",
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/app/*"]
+      "~/*": ["./src/app/*"]
     }
   }
 }

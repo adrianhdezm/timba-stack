@@ -2,6 +2,8 @@ import { type LoaderFunctionArgs, type MetaFunction, json } from '@remix-run/nod
 import { useLoaderData } from '@remix-run/react';
 import { sql } from 'drizzle-orm';
 
+import { Button } from '~/components/ui/button';
+
 export const meta: MetaFunction = () => {
   return [{ title: 'Remix App' }];
 };
@@ -20,6 +22,9 @@ export default function Index() {
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <h1 className="text-3xl font-bold underline">Hello Remix!</h1>
       <p className="text-xl font-bold">{time.toISOString()}</p>
+      <div>
+        <Button>Click me</Button>
+      </div>
     </div>
   );
 }

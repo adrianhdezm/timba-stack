@@ -3,15 +3,15 @@ import type { ServerBuild } from '@remix-run/node';
 import compression from 'compression';
 import cors from 'cors';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import express, { type Application, type Request, type Response } from 'express';
+import express, { type Application, type NextFunction, type Request, type Response } from 'express';
 import helmet from 'helmet';
+import createError from 'http-errors';
 import type { Pool } from 'pg';
 import type { LevelWithSilent } from 'pino';
 import pinoHttp from 'pino-http';
 import type { ViteDevServer } from 'vite';
 
 import { logger } from './logger';
-import { handleServerError } from './middlewares/handle-server-error.middleware';
 
 interface AppParams {
   viteDevServer: ViteDevServer | null;
@@ -84,7 +84,17 @@ export const createApp = async ({ viteDevServer, remixApp, db }: AppParams): Pro
   );
 
   // Error handling middleware
-  app.use(handleServerError);
+  app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+    // log the error
+    req.log.error(err);
+
+    // send the error response
+    if (createError.isHttpError(err)) {
+      res.status(err.statusCode).json({ code: err.statusCode, message: err.message });
+    } else {
+      res.status(500).json({ code: 500, message: 'Internal server error' });
+    }
+  });
 
   return app;
 };
