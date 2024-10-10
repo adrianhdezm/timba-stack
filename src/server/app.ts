@@ -11,6 +11,7 @@ import pinoHttp from 'pino-http';
 import type { ViteDevServer } from 'vite';
 
 import { logger } from './logger';
+import { handleServerError } from './middlewares/handle-server-error.middleware';
 
 interface AppParams {
   viteDevServer: ViteDevServer | null;
@@ -81,6 +82,9 @@ export const createApp = async ({ viteDevServer, remixApp, db }: AppParams): Pro
       }
     })
   );
+
+  // Error handling middleware
+  app.use(handleServerError);
 
   return app;
 };
