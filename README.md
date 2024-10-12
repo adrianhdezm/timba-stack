@@ -19,6 +19,22 @@ npx create-remix@latest --template adrianhdezm/timba-stack
 
 This will set up your project using the **Timba Stack** template.
 
+## Database migrations
+
+After modifiying the database schema in `src/server/db.schema.ts`, you need to create a new migration file and apply it.
+
+### Create a new migration file:
+
+```bash
+npx drizzle-kit generate
+```
+
+### Apply migrations:
+
+```bash
+npx drizzle-kit migrate
+```
+
 ### Development
 
 1. Navigate to your project directory:

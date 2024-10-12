@@ -92,7 +92,7 @@ export default [
 
   // Node
   {
-    files: ['src/server/**/*.ts', 'vite.config.ts', 'eslint.config.mjs', 'postcss.config.js'],
+    files: ['src/server/**/*.ts', 'vite.config.ts', 'eslint.config.mjs', 'postcss.config.js', 'drizzle.config.ts', 'tailwind.config.ts'],
     languageOptions: {
       globals: {
         ...globals.node
